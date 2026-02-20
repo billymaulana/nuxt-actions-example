@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { login } from '#actions'
+import { login, middlewareChain, middlewareChainSkip } from '#actions'
 
 const email = ref('')
 const password = ref('')
@@ -19,6 +19,10 @@ const fieldErrors = computed(() => {
   if (!err?.fieldErrors) return {}
   return err.fieldErrors as Record<string, string[]>
 })
+
+// Chain break demo
+const chainComplete = useAction(middlewareChain)
+const chainSkip = useAction(middlewareChainSkip)
 </script>
 
 <template>
@@ -72,6 +76,38 @@ const fieldErrors = computed(() => {
       <pre>{{ JSON.stringify(loginAction.data.value, null, 2) }}</pre>
     </div>
 
+    <!-- Chain Break Demo -->
+    <div class="card">
+      <h3 style="margin-bottom: 0.5rem">Chain Break Behavior</h3>
+      <p style="color: var(--text-muted); font-size: 0.8125rem; margin-bottom: 0.75rem">
+        When middleware does not call <code>next()</code>, the chain breaks &mdash; remaining middleware
+        is skipped, but the handler still runs with whatever context was accumulated so far.
+      </p>
+      <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem">
+        <button
+          :disabled="chainComplete.isExecuting.value"
+          @click="chainComplete.execute({ label: 'complete' })"
+        >
+          Complete Chain
+        </button>
+        <button
+          class="secondary"
+          :disabled="chainSkip.isExecuting.value"
+          @click="chainSkip.execute({ label: 'skip' })"
+        >
+          Break Chain (mw2 skips)
+        </button>
+      </div>
+      <div v-if="chainComplete.hasSucceeded.value" style="margin-bottom: 0.5rem">
+        <p class="success" style="margin-bottom: 0.25rem">All middleware ran:</p>
+        <pre>{{ JSON.stringify(chainComplete.data.value, null, 2) }}</pre>
+      </div>
+      <div v-if="chainSkip.hasSucceeded.value">
+        <p class="success" style="margin-bottom: 0.25rem">Chain broke at mw2 (mw3 skipped, handler still ran):</p>
+        <pre>{{ JSON.stringify(chainSkip.data.value, null, 2) }}</pre>
+      </div>
+    </div>
+
     <div class="card">
       <h3 style="margin-bottom: 0.5rem">How It Works</h3>
       <p style="color: var(--text-muted); font-size: 0.8125rem">
@@ -80,6 +116,11 @@ const fieldErrors = computed(() => {
         (simulates rate limits). Each middleware adds typed context via <code>next({ ctx: { ... } })</code>.
         The handler receives the accumulated context. Field-level validation errors
         from Zod are automatically formatted into <code>fieldErrors</code>.
+      </p>
+      <p style="color: var(--text-muted); font-size: 0.8125rem; margin-top: 0.5rem">
+        <strong>Chain break:</strong> If a middleware does not call <code>next()</code>,
+        the remaining middleware is skipped but the handler still executes.
+        To block the handler entirely, throw an error instead.
       </p>
       <p style="color: var(--text-muted); font-size: 0.8125rem; margin-top: 0.5rem">
         <strong>Try:</strong> Submit with empty fields (Zod validation),
