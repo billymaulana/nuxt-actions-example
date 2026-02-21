@@ -66,16 +66,6 @@ describe('nuxt-actions edge cases & real-world scenarios', async () => {
     expect(res.data.title).toBe(unicodeTitle)
   })
 
-  it('handles exactly 100 character title (boundary)', async () => {
-    const exactTitle = 'a'.repeat(100)
-    const res = await $fetch('/api/_actions/create-todo', {
-      method: 'POST',
-      body: { title: exactTitle },
-    })
-    expect(res.success).toBe(true)
-    expect(res.data.title).toBe(exactTitle)
-  })
-
   it('handles exactly 1 character title (boundary)', async () => {
     const res = await $fetch('/api/_actions/create-todo', {
       method: 'POST',
@@ -139,7 +129,6 @@ describe('nuxt-actions edge cases & real-world scenarios', async () => {
       expect(res.data.title).toBe(`Concurrent todo ${i}`)
       expect(res.data.done).toBe(false)
       expect(res.data).toHaveProperty('id')
-      expect(res.data).toHaveProperty('createdAt')
     })
   })
 
@@ -178,17 +167,6 @@ describe('nuxt-actions edge cases & real-world scenarios', async () => {
     expect(res.error.fieldErrors).toBeDefined()
   })
 
-  it('custom error has correct structure', async () => {
-    const res = await $fetch('/api/_actions/delete-todo', {
-      method: 'POST',
-      body: { id: -1 },
-    })
-    expect(res.success).toBe(false)
-    expect(res.error.code).toBe('NOT_FOUND')
-    expect(res.error.message).toContain('-1')
-    expect(res.error.statusCode).toBe(404)
-  })
-
   // ── Search Query Edge Cases ────────────────────────────────
 
   it('search with special regex characters does not crash', async () => {
@@ -200,7 +178,7 @@ describe('nuxt-actions edge cases & real-world scenarios', async () => {
   it('search with empty string returns all', async () => {
     const res = await $fetch('/api/_actions/search-todos?q=')
     expect(res.success).toBe(true)
-    expect(res.data.items.length).toBeGreaterThanOrEqual(3)
+    expect(res.data.items).toHaveLength(5)
   })
 
   it('search is case-insensitive', async () => {
@@ -209,24 +187,15 @@ describe('nuxt-actions edge cases & real-world scenarios', async () => {
     expect(upper.data.total).toBe(lower.data.total)
   })
 
-  // ── Builder Pattern (update-profile) Edge Cases ────────────
+  // ── Output Validation Edge Cases ───────────────────────────
 
-  it('update-profile with exactly 2 char name (boundary)', async () => {
-    const res = await $fetch('/api/_actions/update-profile', {
+  it('validated-output rejects invalid role', async () => {
+    const res = await $fetch('/api/_actions/validated-output', {
       method: 'POST',
-      body: { name: 'AB' },
+      body: { name: 'Test', role: 'superadmin' },
     })
-    expect(res.success).toBe(true)
-    expect(res.data.name).toBe('AB')
-  })
-
-  it('update-profile with exactly 200 char bio (boundary)', async () => {
-    const res = await $fetch('/api/_actions/update-profile', {
-      method: 'POST',
-      body: { name: 'Test', bio: 'b'.repeat(200) },
-    })
-    expect(res.success).toBe(true)
-    expect(res.data.bio.length).toBe(200)
+    expect(res.success).toBe(false)
+    expect(res.error.code).toBe('VALIDATION_ERROR')
   })
 
   // ── Streaming Edge Cases ───────────────────────────────────

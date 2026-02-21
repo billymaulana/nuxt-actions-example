@@ -1,19 +1,23 @@
 import { z } from 'zod'
-import { todos } from './create-todo'
+
+const allTodos = [
+  { id: 1, title: 'Learn Nuxt', done: true },
+  { id: 2, title: 'Build app', done: false },
+  { id: 3, title: 'Write tests', done: false },
+  { id: 4, title: 'Deploy to production', done: false },
+  { id: 5, title: 'Set up CI/CD', done: true },
+]
 
 export default defineAction({
   input: z.object({
     q: z.string().optional().default(''),
   }),
   handler: async ({ input }) => {
-    // Simulate a small delay for SSR demo
-    await new Promise(r => setTimeout(r, 100))
-
     const q = input.q.toLowerCase()
     const items = q
-      ? todos.filter(t => t.title.toLowerCase().includes(q))
-      : todos
+      ? allTodos.filter(t => t.title.toLowerCase().includes(q))
+      : allTodos
 
-    return { items, total: items.length, query: input.q }
+    return { items, total: items.length }
   },
 })

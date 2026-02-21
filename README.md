@@ -9,12 +9,12 @@ Real-world examples for [nuxt-actions](https://github.com/billymaulana/nuxt-acti
 | Page | Feature | Composable |
 |------|---------|------------|
 | `/actions` | CRUD with typed refs | `useAction` |
+| `/forms` | Field errors, dirty tracking, reset | `useFormAction` |
 | `/optimistic` | Instant UI + rollback | `useOptimisticAction` |
 | `/streaming` | SSE text streaming | `useStreamAction` |
-| `/queries` | SSR reactive queries | `useActionQuery` |
-| `/middleware` | Auth + field validation | `defineMiddleware` |
-| `/builder` | Shared middleware chain | `createActionClient` |
-| `/errors` | Error codes + recovery | `createActionError` |
+| `/queries` | SSR reactive queries + debounce | `useActionQuery` |
+| `/middleware` | Auth + chain break behavior | `defineMiddleware` |
+| `/advanced` | Retry, timeout, headers, dedupe, throttle, output validation | `useAction` |
 
 ## Setup
 
@@ -29,12 +29,16 @@ Open [http://localhost:3000](http://localhost:3000).
 
 - **E2E Type Inference** — Import typed action refs from `#actions` with zero generics
 - **Standard Schema** — Zod validation with automatic field-level error formatting
-- **Builder Pattern** — `createActionClient().use(middleware).schema().action()`
+- **Form Actions** — `useFormAction` with dirty tracking, field errors, and reset
 - **Optimistic Updates** — Instant UI with automatic rollback on server error
 - **SSR Queries** — Server-rendered data with reactive re-fetching
 - **Streaming** — Real-time SSE chunks with `stop()` control
 - **Middleware Chain** — Reusable auth/rate-limit middleware with typed context
-- **Error Handling** — Consistent format with custom codes and field errors
+- **Retry & Timeout** — Configurable retry with status code matching and request timeout
+- **Dedupe & Throttle** — Cancel/defer duplicate requests and throttle rapid calls
+- **Output Validation** — Server validates both input AND output schemas
+- **Custom Headers** — Static and dynamic header passing per-request
+- **executeAsync** — Throw-on-error alternative to `execute()`
 
 ## License
 
