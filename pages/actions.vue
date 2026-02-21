@@ -1,132 +1,112 @@
-<script setup lang="ts">
-import { createTodo, listTodos, deleteTodo } from '#actions'
-
-const todoTitle = ref('')
-
-// Create a new todo
-const createAction = useAction(createTodo, {
-  onSuccess() {
-    todoTitle.value = ''
-    // Re-fetch list after creation
-    listAction.execute(undefined as never)
-  },
-})
-
-// List all todos
-const listAction = useAction(listTodos)
-
-// Delete a todo
-const deleteAction = useAction(deleteTodo, {
-  onSuccess() {
-    listAction.execute(undefined as never)
-  },
-})
-
-// Fetch on mount
-onMounted(() => {
-  listAction.execute(undefined as never)
-})
-</script>
-
 <template>
   <div>
     <h1>CRUD Actions</h1>
-    <p>Create, list, and delete todos using E2E typed action references.</p>
+    <h2>E2E typed references from #actions</h2>
 
-    <!-- Create form -->
-    <div class="card">
-      <h3 style="margin-bottom: 0.75rem">Create Todo</h3>
+    <!-- Create Todo -->
+    <section>
+      <h3 style="margin-bottom: 8px;">
+        Create Todo
+      </h3>
       <form
-        style="display: flex; gap: 0.5rem"
-        @submit.prevent="createAction.execute({ title: todoTitle })"
+        style="display: flex; gap: 8px;"
+        @submit.prevent="handleCreate"
       >
         <input
           v-model="todoTitle"
           type="text"
-          placeholder="What needs to be done?"
-          style="flex: 1"
+          placeholder="Enter todo title..."
+          style="flex: 1;"
         >
-        <button :disabled="createAction.isExecuting.value || !todoTitle.trim()">
-          {{ createAction.isExecuting.value ? 'Creating...' : 'Add' }}
+        <button
+          type="submit"
+          :disabled="createAction.isExecuting.value"
+        >
+          {{ createAction.isExecuting.value ? 'Creating...' : 'Add Todo' }}
         </button>
       </form>
-      <p v-if="createAction.error.value" class="error" style="margin-top: 0.5rem">
+
+      <div
+        v-if="createAction.error.value"
+        class="error"
+      >
         {{ createAction.error.value.message }}
-      </p>
-      <p v-if="createAction.hasSucceeded.value" class="success" style="margin-top: 0.5rem">
-        Created: {{ createAction.data.value?.title }}
-      </p>
-    </div>
-
-    <!-- Todo list -->
-    <div class="card">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem">
-        <h3>Todos</h3>
-        <button class="secondary" :disabled="listAction.isExecuting.value" @click="listAction.execute(undefined as never)">
-          {{ listAction.isExecuting.value ? 'Loading...' : 'Refresh' }}
-        </button>
+        <pre v-if="createAction.error.value.fieldErrors">{{ JSON.stringify(createAction.error.value.fieldErrors, null, 2) }}</pre>
       </div>
 
-      <div v-if="listAction.isExecuting.value && !listAction.data.value" style="color: var(--text-muted)">
-        Loading...
+      <div
+        v-if="createAction.hasSucceeded.value"
+        class="success"
+      >
+        Created: {{ createAction.data.value.title }} (id: {{ createAction.data.value.id }})
       </div>
+    </section>
 
-      <ul v-else-if="listAction.data.value?.items?.length" class="todo-list">
-        <li v-for="todo in listAction.data.value.items" :key="todo.id" class="todo-item">
-          <span :class="{ done: todo.done }">{{ todo.title }}</span>
-          <div style="display: flex; gap: 0.5rem; align-items: center">
-            <span class="badge" :class="todo.done ? 'green' : 'gray'">
-              {{ todo.done ? 'Done' : 'Pending' }}
-            </span>
-            <button
-              class="secondary"
-              style="padding: 0.25rem 0.5rem; font-size: 0.75rem"
-              @click="deleteAction.execute({ id: todo.id })"
-            >
-              Delete
-            </button>
-          </div>
-        </li>
-      </ul>
+    <!-- List Todos -->
+    <section>
+      <h3 style="margin-bottom: 8px;">
+        Todo List
+      </h3>
+      <button
+        :disabled="listAction.isExecuting.value"
+        @click="handleList"
+      >
+        {{ listAction.isExecuting.value ? 'Loading...' : 'Load Todos' }}
+      </button>
 
-      <div v-else style="color: var(--text-muted)">No todos found.</div>
+      <div
+        v-if="listAction.hasSucceeded.value"
+        style="margin-top: 12px;"
+      >
+        <div
+          v-for="item in listAction.data.value?.items"
+          :key="item.id"
+          style="padding: 8px 0; border-bottom: 1px solid #222;"
+        >
+          <span :style="{ textDecoration: item.done ? 'line-through' : 'none', color: item.done ? '#666' : '#e5e5e5' }">
+            {{ item.title }}
+          </span>
+          <span
+            class="badge"
+            :style="{ background: item.done ? '#0a2c0a' : '#2c1a0a', color: item.done ? '#4ade80' : '#fb923c' }"
+          >
+            {{ item.done ? 'Done' : 'Pending' }}
+          </span>
+        </div>
+      </div>
+    </section>
 
-      <p v-if="listAction.error.value" class="error" style="margin-top: 0.5rem">
-        {{ listAction.error.value.message }}
-      </p>
-    </div>
+    <section>
+      <h3 style="margin-bottom: 8px;">
+        How it works
+      </h3>
+      <pre>import { createTodo, listTodos } from '#actions'
 
-    <!-- Status info -->
-    <div class="card">
-      <h3 style="margin-bottom: 0.5rem">Reactive Status</h3>
-      <pre>{{ JSON.stringify({
-        create: { status: createAction.status.value, isExecuting: createAction.isExecuting.value },
-        list: { status: listAction.status.value, total: listAction.data.value?.total },
-        delete: { status: deleteAction.status.value },
-      }, null, 2) }}</pre>
-    </div>
+const createAction = useAction(createTodo)
+const listAction = useAction(listTodos)</pre>
+    </section>
   </div>
 </template>
 
-<style scoped>
-.todo-list {
-  list-style: none;
+<script setup lang="ts">
+import { ref } from 'vue'
+import { createTodo, listTodos } from '#actions'
+
+const todoTitle = ref('')
+
+const createAction = useAction(createTodo, {
+  onSuccess() {
+    todoTitle.value = ''
+  },
+})
+
+const listAction = useAction(listTodos)
+
+async function handleCreate() {
+  await createAction.execute({ title: todoTitle.value })
 }
 
-.todo-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid var(--border);
+async function handleList() {
+  await listAction.execute(undefined as never)
 }
-
-.todo-item:last-child {
-  border-bottom: none;
-}
-
-.done {
-  text-decoration: line-through;
-  color: var(--text-muted);
-}
-</style>
+</script>

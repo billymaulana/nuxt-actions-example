@@ -1,19 +1,31 @@
 <template>
   <div id="app">
-    <header>
-      <nav>
-        <NuxtLink to="/" class="brand">nuxt-actions</NuxtLink>
-        <div class="nav-links">
-          <NuxtLink to="/actions">Actions</NuxtLink>
-          <NuxtLink to="/optimistic">Optimistic</NuxtLink>
-          <NuxtLink to="/streaming">Streaming</NuxtLink>
-          <NuxtLink to="/queries">Queries</NuxtLink>
-          <NuxtLink to="/middleware">Middleware</NuxtLink>
-          <NuxtLink to="/builder">Builder</NuxtLink>
-          <NuxtLink to="/errors">Errors</NuxtLink>
-        </div>
-      </nav>
-    </header>
+    <nav>
+      <NuxtLink to="/">
+        Home
+      </NuxtLink>
+      <NuxtLink to="/actions">
+        Actions
+      </NuxtLink>
+      <NuxtLink to="/forms">
+        Forms
+      </NuxtLink>
+      <NuxtLink to="/optimistic">
+        Optimistic
+      </NuxtLink>
+      <NuxtLink to="/streaming">
+        Streaming
+      </NuxtLink>
+      <NuxtLink to="/queries">
+        Queries
+      </NuxtLink>
+      <NuxtLink to="/middleware">
+        Middleware
+      </NuxtLink>
+      <NuxtLink to="/advanced">
+        Advanced
+      </NuxtLink>
+    </nav>
     <main>
       <NuxtPage />
     </main>
@@ -21,18 +33,6 @@
 </template>
 
 <style>
-:root {
-  --bg: #0a0a0a;
-  --surface: #141414;
-  --border: #2a2a2a;
-  --text: #e5e5e5;
-  --text-muted: #888;
-  --brand: #00dc82;
-  --brand-dim: #00dc8233;
-  --error: #ef4444;
-  --error-dim: #ef444433;
-}
-
 * {
   margin: 0;
   padding: 0;
@@ -41,119 +41,89 @@
 
 body {
   font-family: system-ui, -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
+  background: #0a0a0a;
+  color: #e5e5e5;
   line-height: 1.6;
 }
 
 #app {
-  min-height: 100vh;
-}
-
-header {
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  background: var(--bg);
-  z-index: 100;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 24px 16px;
 }
 
 nav {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0.75rem 1.5rem;
   display: flex;
-  align-items: center;
-  gap: 2rem;
-  overflow-x: auto;
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid #333;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
 }
 
-.brand {
-  color: var(--brand);
-  font-weight: 700;
-  font-size: 1rem;
+nav a {
+  color: #a3a3a3;
   text-decoration: none;
-  white-space: nowrap;
-}
-
-.nav-links {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.nav-links a {
-  color: var(--text-muted);
-  text-decoration: none;
-  padding: 0.25rem 0.75rem;
+  padding: 6px 12px;
   border-radius: 6px;
-  font-size: 0.875rem;
+  font-size: 14px;
   transition: all 0.15s;
-  white-space: nowrap;
 }
 
-.nav-links a:hover,
-.nav-links a.router-link-active {
-  color: var(--brand);
-  background: var(--brand-dim);
+nav a:hover {
+  background: #1a1a1a;
+  color: #fff;
 }
 
-main {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 0 1.5rem;
+nav a.router-link-active {
+  background: #1e3a5f;
+  color: #60a5fa;
 }
 
 h1 {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
+  font-size: 24px;
+  margin-bottom: 8px;
 }
 
-h1 + p {
-  color: var(--text-muted);
-  margin-bottom: 1.5rem;
+h2 {
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: #a3a3a3;
 }
 
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 1rem;
+section {
+  margin-bottom: 32px;
 }
 
-input[type="text"],
-input[type="email"],
-input[type="password"],
-textarea {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 0.5rem 0.75rem;
+input, textarea {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  color: #e5e5e5;
+  padding: 8px 12px;
   border-radius: 6px;
-  font-size: 0.875rem;
   width: 100%;
+  font-size: 14px;
 }
 
-input:focus,
-textarea:focus {
+input:focus, textarea:focus {
   outline: none;
-  border-color: var(--brand);
+  border-color: #60a5fa;
 }
 
 button {
-  background: var(--brand);
-  color: #000;
+  background: #1e3a5f;
+  color: #60a5fa;
   border: none;
-  padding: 0.5rem 1rem;
+  padding: 8px 16px;
   border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.15s;
+  font-size: 14px;
+  transition: all 0.15s;
 }
 
 button:hover:not(:disabled) {
-  opacity: 0.9;
+  background: #2563eb;
+  color: #fff;
 }
 
 button:disabled {
@@ -161,58 +131,38 @@ button:disabled {
   cursor: not-allowed;
 }
 
-button.secondary {
-  background: var(--surface);
-  color: var(--text);
-  border: 1px solid var(--border);
-}
-
 .error {
-  color: var(--error);
-  font-size: 0.8125rem;
+  color: #f87171;
+  background: #1c1010;
+  padding: 12px;
+  border-radius: 6px;
+  margin-top: 12px;
+  font-size: 14px;
 }
 
 .success {
-  color: var(--brand);
-  font-size: 0.8125rem;
+  color: #4ade80;
+  background: #0a1c10;
+  padding: 12px;
+  border-radius: 6px;
+  margin-top: 12px;
+  font-size: 14px;
 }
 
 .badge {
   display: inline-block;
-  padding: 0.125rem 0.5rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
   font-weight: 600;
 }
 
-.badge.green {
-  background: var(--brand-dim);
-  color: var(--brand);
-}
-
-.badge.red {
-  background: var(--error-dim);
-  color: var(--error);
-}
-
-.badge.gray {
-  background: #333;
-  color: var(--text-muted);
-}
-
 pre {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1rem;
+  background: #111;
+  padding: 12px;
+  border-radius: 6px;
   overflow-x: auto;
-  font-size: 0.8125rem;
-  line-height: 1.5;
-}
-
-.field-error {
-  color: var(--error);
-  font-size: 0.75rem;
-  margin-top: 0.25rem;
+  font-size: 13px;
+  margin-top: 8px;
 }
 </style>

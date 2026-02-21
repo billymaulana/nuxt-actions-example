@@ -1,131 +1,146 @@
+<template>
+  <div>
+    <h1>Middleware & Auth</h1>
+    <h2>Chained middleware with validation and error handling</h2>
+
+    <section>
+      <form @submit.prevent="handleLogin">
+        <div style="display: grid; gap: 8px;">
+          <input
+            v-model="email"
+            type="email"
+            placeholder="admin@example.com"
+          >
+          <input
+            v-model="password"
+            type="password"
+            placeholder="password123"
+          >
+          <button
+            type="submit"
+            :disabled="loginAction.isExecuting.value"
+          >
+            {{ loginAction.isExecuting.value ? 'Logging in...' : 'Login' }}
+          </button>
+        </div>
+      </form>
+
+      <div
+        v-if="loginAction.error.value"
+        class="error"
+      >
+        {{ loginAction.error.value.message }}
+        <pre v-if="loginAction.error.value.fieldErrors">{{ JSON.stringify(loginAction.error.value.fieldErrors, null, 2) }}</pre>
+      </div>
+
+      <div
+        v-if="loginAction.hasSucceeded.value"
+        class="success"
+      >
+        <p>Welcome, {{ loginAction.data.value.user.name }}!</p>
+        <p style="font-size: 13px; color: #4ade80; opacity: 0.7; margin-top: 4px;">
+          Token: {{ loginAction.data.value.token }}
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <h3 style="margin-bottom: 8px;">
+        Test credentials
+      </h3>
+      <div style="background: #111; padding: 12px; border-radius: 6px; font-size: 13px; color: #a3a3a3;">
+        <p>Email: <code>admin@example.com</code></p>
+        <p>Password: <code>password123</code></p>
+        <p style="margin-top: 8px; color: #666;">
+          Try wrong credentials to see error handling.
+        </p>
+      </div>
+    </section>
+
+    <!-- Chain Break Demo -->
+    <section>
+      <h3 style="margin-bottom: 8px;">
+        Chain Break Behavior
+      </h3>
+      <p style="color: #666; font-size: 13px; margin-bottom: 8px;">
+        When middleware does not call <code>next()</code>, the chain breaks — remaining middleware is skipped, but the handler still runs with whatever context was accumulated so far.
+      </p>
+      <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+        <button
+          :disabled="chainComplete.isExecuting.value"
+          @click="chainComplete.execute({ label: 'complete' })"
+        >
+          Complete Chain (all next())
+        </button>
+        <button
+          :disabled="chainSkip.isExecuting.value"
+          @click="chainSkip.execute({ label: 'skip' })"
+        >
+          Break Chain (mw2 skips next())
+        </button>
+      </div>
+      <div
+        v-if="chainComplete.hasSucceeded.value"
+        class="success"
+      >
+        <strong>Complete chain:</strong>
+        <pre>{{ JSON.stringify(chainComplete.data.value, null, 2) }}</pre>
+      </div>
+      <div
+        v-if="chainSkip.hasSucceeded.value"
+        class="success"
+      >
+        <strong>Chain break (mw2 skipped next()):</strong>
+        <pre>{{ JSON.stringify(chainSkip.data.value, null, 2) }}</pre>
+      </div>
+      <pre>// mw2 does NOT call next()
+const mw2Skip = defineMiddleware(async () => {
+  // chain breaks here — mw3 never runs
+  // handler still executes with ctx from mw1 only
+})
+
+middleware: [mw1, mw2Skip, mw3]
+// Result: mw1 ✓, mw2 skipped, mw3 ✗, handler ✓</pre>
+    </section>
+
+    <section>
+      <h3 style="margin-bottom: 8px;">
+        How it works
+      </h3>
+      <pre>// server/actions/login.post.ts
+const authMiddleware = defineMiddleware(async ({ next }) => {
+  const start = Date.now()
+  const result = await next({ ctx: { requestTime: start } })
+  console.log(`Took ${Date.now() - start}ms`)
+  return result
+})
+
+export default defineAction({
+  input: z.object({
+    email: z.string().email(),
+    password: z.string().min(8),
+  }),
+  middleware: [authMiddleware, rateLimitMiddleware],
+  handler: async ({ input, ctx }) => { ... },
+})</pre>
+    </section>
+  </div>
+</template>
+
 <script setup lang="ts">
+import { ref } from 'vue'
 import { login, middlewareChain, middlewareChainSkip } from '#actions'
 
-const email = ref('')
-const password = ref('')
+const email = ref('admin@example.com')
+const password = ref('password123')
 
-const loginAction = useAction(login, {
-  onSuccess(data) {
-    console.log('Login successful:', data)
-  },
-})
+const loginAction = useAction(login)
 
 async function handleLogin() {
   await loginAction.execute({ email: email.value, password: password.value })
 }
 
-const fieldErrors = computed(() => {
-  const err = loginAction.error.value
-  if (!err?.fieldErrors) return {}
-  return err.fieldErrors as Record<string, string[]>
-})
-
 // Chain break demo
 const chainComplete = useAction(middlewareChain)
 const chainSkip = useAction(middlewareChainSkip)
 </script>
-
-<template>
-  <div>
-    <h1>Middleware & Auth</h1>
-    <p>Authentication flow with chained middleware, field validation, and error handling.</p>
-
-    <div class="card">
-      <h3 style="margin-bottom: 0.75rem">Login</h3>
-      <form @submit.prevent="handleLogin">
-        <div style="margin-bottom: 0.75rem">
-          <input
-            v-model="email"
-            type="email"
-            placeholder="Email (try admin@example.com)"
-          >
-          <p v-if="fieldErrors.email" class="field-error">
-            {{ fieldErrors.email[0] }}
-          </p>
-        </div>
-
-        <div style="margin-bottom: 0.75rem">
-          <input
-            v-model="password"
-            type="password"
-            placeholder="Password (try password123)"
-          >
-          <p v-if="fieldErrors.password" class="field-error">
-            {{ fieldErrors.password[0] }}
-          </p>
-        </div>
-
-        <button :disabled="loginAction.isExecuting.value">
-          {{ loginAction.isExecuting.value ? 'Logging in...' : 'Login' }}
-        </button>
-      </form>
-
-      <p
-        v-if="loginAction.error.value && !Object.keys(fieldErrors).length"
-        class="error"
-        style="margin-top: 0.75rem"
-      >
-        {{ loginAction.error.value.message }}
-        <span class="badge red" style="margin-left: 0.5rem">{{ loginAction.error.value.code }}</span>
-      </p>
-    </div>
-
-    <!-- Success result -->
-    <div v-if="loginAction.hasSucceeded.value && loginAction.data.value" class="card">
-      <h3 style="margin-bottom: 0.5rem; color: var(--brand)">Login Successful</h3>
-      <pre>{{ JSON.stringify(loginAction.data.value, null, 2) }}</pre>
-    </div>
-
-    <!-- Chain Break Demo -->
-    <div class="card">
-      <h3 style="margin-bottom: 0.5rem">Chain Break Behavior</h3>
-      <p style="color: var(--text-muted); font-size: 0.8125rem; margin-bottom: 0.75rem">
-        When middleware does not call <code>next()</code>, the chain breaks &mdash; remaining middleware
-        is skipped, but the handler still runs with whatever context was accumulated so far.
-      </p>
-      <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem">
-        <button
-          :disabled="chainComplete.isExecuting.value"
-          @click="chainComplete.execute({ label: 'complete' })"
-        >
-          Complete Chain
-        </button>
-        <button
-          class="secondary"
-          :disabled="chainSkip.isExecuting.value"
-          @click="chainSkip.execute({ label: 'skip' })"
-        >
-          Break Chain (mw2 skips)
-        </button>
-      </div>
-      <div v-if="chainComplete.hasSucceeded.value" style="margin-bottom: 0.5rem">
-        <p class="success" style="margin-bottom: 0.25rem">All middleware ran:</p>
-        <pre>{{ JSON.stringify(chainComplete.data.value, null, 2) }}</pre>
-      </div>
-      <div v-if="chainSkip.hasSucceeded.value">
-        <p class="success" style="margin-bottom: 0.25rem">Chain broke at mw2 (mw3 skipped, handler still ran):</p>
-        <pre>{{ JSON.stringify(chainSkip.data.value, null, 2) }}</pre>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3 style="margin-bottom: 0.5rem">How It Works</h3>
-      <p style="color: var(--text-muted); font-size: 0.8125rem">
-        The <code>login</code> action uses two chained middleware:
-        <code>logMiddleware</code> (tracks timing) and <code>rateLimitMiddleware</code>
-        (simulates rate limits). Each middleware adds typed context via <code>next({ ctx: { ... } })</code>.
-        The handler receives the accumulated context. Field-level validation errors
-        from Zod are automatically formatted into <code>fieldErrors</code>.
-      </p>
-      <p style="color: var(--text-muted); font-size: 0.8125rem; margin-top: 0.5rem">
-        <strong>Chain break:</strong> If a middleware does not call <code>next()</code>,
-        the remaining middleware is skipped but the handler still executes.
-        To block the handler entirely, throw an error instead.
-      </p>
-      <p style="color: var(--text-muted); font-size: 0.8125rem; margin-top: 0.5rem">
-        <strong>Try:</strong> Submit with empty fields (Zod validation),
-        or wrong credentials (<code>createActionError</code> with INVALID_CREDENTIALS code).
-      </p>
-    </div>
-  </div>
-</template>
