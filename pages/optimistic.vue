@@ -1,11 +1,73 @@
+<template>
+  <div>
+    <h1>Optimistic Updates</h1>
+    <h2>Instant UI with automatic rollback on error</h2>
+
+    <section>
+      <div
+        v-for="todo in (optimisticAction.optimisticData.value as typeof todos)"
+        :key="todo.id"
+        style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #222;"
+      >
+        <button
+          style="padding: 4px 10px; font-size: 16px;"
+          :disabled="optimisticAction.isExecuting.value"
+          @click="handleToggle(todo)"
+        >
+          {{ todo.done ? '&#10003;' : '&nbsp;&nbsp;' }}
+        </button>
+        <span :style="{ textDecoration: todo.done ? 'line-through' : 'none', color: todo.done ? '#666' : '#e5e5e5', flex: 1 }">
+          {{ todo.title }}
+        </span>
+        <span
+          class="badge"
+          :style="{ background: todo.done ? '#0a2c0a' : '#2c1a0a', color: todo.done ? '#4ade80' : '#fb923c' }"
+        >
+          {{ todo.done ? 'Done' : 'Pending' }}
+        </span>
+      </div>
+    </section>
+
+    <section v-if="optimisticAction.isExecuting.value">
+      <p style="color: #a3a3a3; font-size: 13px;">
+        Syncing with server...
+      </p>
+    </section>
+
+    <section
+      v-if="optimisticAction.error.value"
+      class="error"
+    >
+      {{ optimisticAction.error.value.message }}
+    </section>
+
+    <section>
+      <h3 style="margin-bottom: 8px;">
+        How it works
+      </h3>
+      <pre>import { toggleTodo } from '#actions'
+
+const optimisticAction = useOptimisticAction(toggleTodo, {
+  currentData: todos,
+  updateFn(input, current) {
+    return current.map(t =>
+      t.id === input.id ? { ...t, done: input.done } : t
+    )
+  },
+})</pre>
+    </section>
+  </div>
+</template>
+
 <script setup lang="ts">
+import { ref } from 'vue'
 import { toggleTodo } from '#actions'
 
 const todos = ref([
   { id: 1, title: 'Learn Nuxt', done: true },
-  { id: 2, title: 'Try nuxt-actions', done: false },
-  { id: 3, title: 'Build something amazing', done: false },
-  { id: 4, title: 'Deploy to production', done: false },
+  { id: 2, title: 'Build server actions', done: false },
+  { id: 3, title: 'Add optimistic updates', done: false },
+  { id: 4, title: 'Ship to production', done: false },
 ])
 
 const optimisticAction = useOptimisticAction(toggleTodo, {
@@ -16,97 +78,15 @@ const optimisticAction = useOptimisticAction(toggleTodo, {
     )
   },
   onSuccess(data) {
-    // Sync with server truth
+    // Sync local state with server truth
     const index = todos.value.findIndex(t => t.id === data.id)
     if (index !== -1) {
       todos.value[index] = { ...todos.value[index], done: data.done }
     }
   },
-  onError() {
-    // optimisticData automatically rolls back
-  },
 })
 
-const displayTodos = computed(() =>
-  (optimisticAction.optimisticData.value as typeof todos.value) ?? todos.value,
-)
-
-const doneCount = computed(() => displayTodos.value.filter(t => t.done).length)
+function handleToggle(todo: { id: number, done: boolean }) {
+  optimisticAction.execute({ id: todo.id, done: !todo.done })
+}
 </script>
-
-<template>
-  <div>
-    <h1>Optimistic Updates</h1>
-    <p>Toggle todo status with instant UI feedback. Changes appear immediately while the server confirms.</p>
-
-    <div class="card">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem">
-        <h3>Todos</h3>
-        <span class="badge green">{{ doneCount }}/{{ displayTodos.length }} done</span>
-      </div>
-
-      <ul class="todo-list">
-        <li v-for="todo in displayTodos" :key="todo.id" class="todo-item">
-          <label class="todo-label">
-            <input
-              type="checkbox"
-              :checked="todo.done"
-              @change="optimisticAction.execute({ id: todo.id, done: !todo.done })"
-            >
-            <span :class="{ done: todo.done }">{{ todo.title }}</span>
-          </label>
-          <span class="badge" :class="todo.done ? 'green' : 'gray'">
-            {{ todo.done ? 'Done' : 'Pending' }}
-          </span>
-        </li>
-      </ul>
-
-      <p v-if="optimisticAction.error.value" class="error" style="margin-top: 0.75rem">
-        {{ optimisticAction.error.value.message }} (rolled back)
-      </p>
-    </div>
-
-    <div class="card">
-      <h3 style="margin-bottom: 0.5rem">How It Works</h3>
-      <p style="color: var(--text-muted); font-size: 0.8125rem">
-        The checkbox updates <strong>instantly</strong> via <code>updateFn</code>.
-        The server has a 500ms simulated delay. If the server rejects the change,
-        <code>optimisticData</code> automatically rolls back to the previous state.
-      </p>
-      <pre style="margin-top: 0.75rem">{{ JSON.stringify({
-        status: optimisticAction.status.value,
-        isExecuting: optimisticAction.isExecuting.value,
-      }, null, 2) }}</pre>
-    </div>
-  </div>
-</template>
-
-<style scoped>
-.todo-list {
-  list-style: none;
-}
-
-.todo-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.todo-item:last-child {
-  border-bottom: none;
-}
-
-.todo-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-}
-
-.done {
-  text-decoration: line-through;
-  color: var(--text-muted);
-}
-</style>

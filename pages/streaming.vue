@@ -1,108 +1,90 @@
-<script setup lang="ts">
-import { generateText } from '#actions'
-
-const prompt = ref('Tell me about type safety')
-const streamAction = useStreamAction(generateText)
-
-async function handleSubmit() {
-  if (!prompt.value.trim()) return
-  await streamAction.execute({ prompt: prompt.value })
-}
-
-const displayText = computed(() =>
-  (streamAction.chunks.value as Array<{ text: string }>)
-    .map(c => c.text)
-    .join(''),
-)
-</script>
-
 <template>
   <div>
     <h1>Streaming</h1>
-    <p>AI-style text streaming via Server-Sent Events with real-time chunk updates.</p>
+    <h2>AI-style text streaming via Server-Sent Events</h2>
 
-    <div class="card">
-      <h3 style="margin-bottom: 0.75rem">Prompt</h3>
-      <form style="display: flex; gap: 0.5rem" @submit.prevent="handleSubmit">
+    <section>
+      <form
+        style="display: flex; gap: 8px;"
+        @submit.prevent="handleGenerate"
+      >
         <input
           v-model="prompt"
           type="text"
-          placeholder="Ask anything..."
-          style="flex: 1"
-          :disabled="streamAction.status.value === 'streaming'"
+          placeholder="Enter a prompt..."
+          style="flex: 1;"
         >
         <button
           v-if="streamAction.status.value !== 'streaming'"
+          type="submit"
           :disabled="!prompt.trim()"
         >
-          Stream
+          Generate
         </button>
         <button
           v-else
-          class="secondary"
           type="button"
+          style="background: #5f1e1e; color: #f87171;"
           @click="streamAction.stop()"
         >
           Stop
         </button>
       </form>
-    </div>
+    </section>
 
-    <div v-if="displayText || streamAction.status.value === 'streaming'" class="card">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem">
-        <h3>Response</h3>
+    <section v-if="streamAction.status.value !== 'idle'">
+      <div style="background: #111; padding: 16px; border-radius: 8px; min-height: 100px; white-space: pre-wrap; font-size: 14px; line-height: 1.8;">
         <span
-          class="badge"
-          :class="{
-            green: streamAction.status.value === 'done',
-            gray: streamAction.status.value === 'streaming',
-          }"
-        >
-          {{ streamAction.status.value }}
-        </span>
+          v-for="(chunk, i) in (streamAction.chunks.value as Array<{text: string}>)"
+          :key="i"
+        >{{ chunk.text }}</span>
+        <span
+          v-if="streamAction.status.value === 'streaming'"
+          style="animation: blink 1s infinite; color: #60a5fa;"
+        >|</span>
       </div>
-      <div class="stream-output">
-        {{ displayText }}<span v-if="streamAction.status.value === 'streaming'" class="cursor">|</span>
+
+      <div style="margin-top: 8px; display: flex; gap: 16px; font-size: 13px; color: #666;">
+        <span>Status: {{ streamAction.status.value }}</span>
+        <span>Chunks: {{ streamAction.chunks.value.length }}</span>
       </div>
-      <p style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.75rem">
-        {{ (streamAction.chunks.value as unknown[]).length }} chunks received
-      </p>
-    </div>
+    </section>
 
-    <div v-if="streamAction.error.value" class="card">
-      <p class="error">{{ streamAction.error.value.message }}</p>
-    </div>
+    <section
+      v-if="streamAction.error.value"
+      class="error"
+    >
+      {{ streamAction.error.value.message }}
+    </section>
 
-    <div class="card">
-      <h3 style="margin-bottom: 0.5rem">How It Works</h3>
-      <p style="color: var(--text-muted); font-size: 0.8125rem">
-        The server uses <code>defineStreamAction</code> with an SSE event stream.
-        Each word is sent as a separate chunk via <code>stream.send()</code>.
-        The client uses <code>useStreamAction</code> which provides reactive
-        <code>chunks</code>, <code>status</code>, and a <code>stop()</code> method.
-      </p>
-    </div>
+    <section>
+      <h3 style="margin-bottom: 8px;">
+        How it works
+      </h3>
+      <pre>import { generateText } from '#actions'
+
+const streamAction = useStreamAction(generateText)
+await streamAction.execute({ prompt: 'Hello' })
+// streamAction.chunks reactively updates</pre>
+    </section>
   </div>
 </template>
 
+<script setup lang="ts">
+import { ref } from 'vue'
+import { generateText } from '#actions'
+
+const prompt = ref('Tell me about type-safe server actions')
+const streamAction = useStreamAction(generateText)
+
+async function handleGenerate() {
+  await streamAction.execute({ prompt: prompt.value })
+}
+</script>
+
 <style scoped>
-.stream-output {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1rem;
-  line-height: 1.8;
-  min-height: 80px;
-}
-
-.cursor {
-  animation: blink 0.7s infinite;
-  color: var(--brand);
-  font-weight: bold;
-}
-
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
 }
 </style>
