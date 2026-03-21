@@ -25,6 +25,15 @@
       <NuxtLink to="/advanced">
         Advanced
       </NuxtLink>
+      <NuxtLink to="/polling">
+        Polling
+      </NuxtLink>
+      <NuxtLink to="/infinite">
+        Infinite
+      </NuxtLink>
+      <NuxtLink to="/batch">
+        Batch
+      </NuxtLink>
     </nav>
     <main>
       <NuxtPage />

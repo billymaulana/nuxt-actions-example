@@ -58,5 +58,20 @@ const pages = [
     title: 'Advanced Features',
     description: 'Retry, timeout, custom headers, dedupe, throttle, output validation, and executeAsync.',
   },
+  {
+    path: '/polling',
+    title: 'Polling & Auto-Refetch',
+    description: 'refetchInterval, refetchOnFocus, refetchOnReconnect, enabled toggle, and transform.',
+  },
+  {
+    path: '/infinite',
+    title: 'Infinite Scroll',
+    description: 'Cursor-based pagination with useInfiniteActionQuery — fetchNextPage, hasNextPage.',
+  },
+  {
+    path: '/batch',
+    title: 'Batch Execution',
+    description: 'Execute multiple actions in parallel or sequentially with useActions.',
+  },
 ]
 </script>
