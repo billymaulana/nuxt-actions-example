@@ -73,5 +73,25 @@ const pages = [
     title: 'Batch Execution',
     description: 'Execute multiple actions in parallel or sequentially with useActions.',
   },
+  {
+    path: '/security',
+    title: 'Security Middleware',
+    description: 'Built-in rateLimitMiddleware and csrfMiddleware for action protection.',
+  },
+  {
+    path: '/progressive',
+    title: 'Progressive Enhancement',
+    description: 'useActionState for forms that work with and without JavaScript.',
+  },
+  {
+    path: '/real-world',
+    title: 'Real-World App',
+    description: 'Complete mini todo app combining auth, CRUD, polling, optimistic updates, and validation.',
+  },
+  {
+    path: '/prefetch',
+    title: 'Prefetch & Stream Cache',
+    description: 'prefetchAction to pre-warm cache on hover, useStreamActionQuery with persistent cache.',
+  },
 ]
 </script>

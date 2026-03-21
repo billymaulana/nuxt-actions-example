@@ -34,6 +34,18 @@
       <NuxtLink to="/batch">
         Batch
       </NuxtLink>
+      <NuxtLink to="/security">
+        Security
+      </NuxtLink>
+      <NuxtLink to="/progressive">
+        Progressive
+      </NuxtLink>
+      <NuxtLink to="/real-world">
+        Real-World
+      </NuxtLink>
+      <NuxtLink to="/prefetch">
+        Prefetch
+      </NuxtLink>
     </nav>
     <main>
       <NuxtPage />
