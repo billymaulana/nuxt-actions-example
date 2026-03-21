@@ -12,8 +12,8 @@ importers:
         specifier: ^3.17.0
         version: 3.21.1(@parcel/watcher@2.5.6)(@vue/compiler-sfc@3.5.28)(cac@6.7.14)(db0@0.3.4)(ioredis@5.9.3)(magicast@0.5.2)(rollup@4.57.1)(terser@5.46.0)(typescript@5.9.3)(vite@7.3.1(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.2))(yaml@2.8.2)
       nuxt-actions:
-        specifier: ^1.0.3
-        version: 1.0.3(magicast@0.5.2)(zod@3.25.76)
+        specifier: ^1.1.0
+        version: 1.1.0(magicast@0.5.2)(zod@3.25.76)
       vue:
         specifier: ^3.5.0
         version: 3.5.28(typescript@5.9.3)
@@ -2425,8 +2425,8 @@ packages:
   nth-check@2.1.1:
     resolution: {integrity: sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==}
 
-  nuxt-actions@1.0.3:
-    resolution: {integrity: sha512-EFGybK5zKg+A0Xv/STR/4uvYNBfv2v0Yx8A6Im9y6BKdZ4mmUu1LKh5cO6y5teltBxCkG07P1EaaklFUE7t4rQ==}
+  nuxt-actions@1.1.0:
+    resolution: {integrity: sha512-CT79LDJVwrug6U+I1HyWZ0efQklm7LyPALIDUEsFi/S1R+dPxqMioUxupHM/SIRmpcxMQgXfGkbiJANfuKamsg==}
     peerDependencies:
       arktype: '>=2.1.0'
       valibot: '>=1.0.0'
@@ -3150,6 +3150,7 @@ packages:
 
   unplugin-vue-router@0.19.2:
     resolution: {integrity: sha512-u5dgLBarxE5cyDK/hzJGfpCTLIAyiTXGlo85COuD4Nssj6G7NxS+i9mhCWz/1p/ud1eMwdcUbTXehQe41jYZUA==}
+    deprecated: 'Merged into vuejs/router. Migrate: https://router.vuejs.org/guide/migration/v4-to-v5.html'
     peerDependencies:
       '@vue/compiler-sfc': ^3.5.17
       vue-router: ^4.6.0
@@ -5980,7 +5981,7 @@ snapshots:
     dependencies:
       boolbase: 1.0.0
 
-  nuxt-actions@1.0.3(magicast@0.5.2)(zod@3.25.76):
+  nuxt-actions@1.1.0(magicast@0.5.2)(zod@3.25.76):
     dependencies:
       '@nuxt/kit': 4.3.1(magicast@0.5.2)
     optionalDependencies:
