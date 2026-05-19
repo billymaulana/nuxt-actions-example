@@ -13,7 +13,7 @@
     "test:watch": "vitest watch"
   },
   "dependencies": {
-    "nuxt": "^3.21.2",
+    "nuxt": "^3.21.6",
     "nuxt-actions": "^1.1.2",
     "vue": "^3.5.30",
     "vue-router": "^4.6.4",
