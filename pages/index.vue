@@ -39,6 +39,26 @@ const pages = [
     description: 'Toggle todo status with instant UI updates and automatic rollback on error.',
   },
   {
+    path: '/mutations',
+    title: 'Smart Cache Invalidation',
+    description: 'useActionMutation + tags — a write auto-refetches every query that depends on it.',
+  },
+  {
+    path: '/uploads',
+    title: 'File Uploads',
+    description: 'multipart/form-data parsed into typed file fields. Avatar upload with preview.',
+  },
+  {
+    path: '/auth',
+    title: 'Auth Preset',
+    description: 'defineAuthMiddleware resolves ctx.user or rejects with a typed 401.',
+  },
+  {
+    path: '/openapi',
+    title: 'OpenAPI & Swagger UI',
+    description: 'Generate an OpenAPI 3.1 document and Swagger UI straight from your actions.',
+  },
+  {
     path: '/streaming',
     title: 'Streaming',
     description: 'AI-style text streaming via Server-Sent Events with real-time chunk updates.',

@@ -1,6 +1,6 @@
 # nuxt-actions Example
 
-Real-world examples for [nuxt-actions](https://github.com/billymaulana/nuxt-actions) v1.1.2 — type-safe server actions for Nuxt.
+Real-world examples for [nuxt-actions](https://github.com/billymaulana/nuxt-actions) v1.2.0 — type-safe server actions for Nuxt.
 
 <p>
   <a href="https://npmjs.com/package/nuxt-actions"><img src="https://img.shields.io/npm/v/nuxt-actions/latest.svg?style=flat&colorA=020420&colorB=00DC82" alt="npm version"></a>
@@ -23,6 +23,10 @@ Real-world examples for [nuxt-actions](https://github.com/billymaulana/nuxt-acti
 | `/actions` | CRUD with E2E typed action refs | `useAction` |
 | `/forms` | Field-level errors, dirty tracking, reset | `useFormAction` |
 | `/optimistic` | Instant UI + automatic rollback | `useOptimisticAction` |
+| `/mutations` | Smart cache — a write auto-refetches every tagged query | `useActionMutation` |
+| `/uploads` | multipart/form-data parsed into typed file fields | `useAction`, `ActionFile` |
+| `/auth` | Protect actions, resolve `ctx.user`, reject with 401 | `defineAuthMiddleware` |
+| `/openapi` | Generate an OpenAPI 3.1 doc + Swagger UI from actions | `openapi` module option |
 | `/streaming` | SSE text streaming with stop control | `useStreamAction` |
 | `/queries` | SSR queries + debounced search + transform | `useActionQuery` |
 | `/middleware` | Auth chain, skip behavior, typed context | `defineMiddleware` |
@@ -51,6 +55,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | Composable | Description |
 |------------|-------------|
 | `useAction` | Core composable — reactive state, retry, dedupe, debounce, throttle, transform |
+| `useActionMutation` | Write action that auto-refetches affected queries (typed refs and/or tags) |
 | `useFormAction` | Form-aware — field-level errors, dirty tracking, v-model support |
 | `useOptimisticAction` | Instant UI updates with automatic rollback on server error |
 | `useActionQuery` | SSR queries via `useAsyncData` — polling, focus/reconnect refetch, transform |
@@ -71,11 +76,24 @@ Open [http://localhost:3000](http://localhost:3000).
 | `defineStreamAction` | Streaming server actions via SSE |
 | `createActionClient` | Builder pattern — chain middleware, schema, metadata |
 | `defineMiddleware` | Reusable middleware with typed context accumulation |
+| `defineAuthMiddleware` | Auth preset — resolve `ctx.user` or reject with a typed 401 |
 | `createMiddleware` | Alias for publishable middleware (npm packages) |
 | `createActionError` | Typed error creation with field-level details |
 | `returnValidationErrors` | Throw structured validation errors from handlers |
 | `rateLimitMiddleware` | In-memory rate limiting per IP |
 | `csrfMiddleware` | CSRF token protection with timing-safe comparison |
+| `invalidateActions` / `invalidateTags` | Refetch action queries by reference, path, or tag |
+
+## What's New in v1.2.0
+
+- **Smart Cache Invalidation** — `useActionMutation` auto-refetches the queries a write affects, targeting typed action references and/or string tags. Adds `invalidateTags()` and a `tags` option on `useActionQuery`. See `/mutations`.
+- **File Uploads** — `multipart/form-data` requests are parsed into typed `{ filename, type, data }` file fields. See `/uploads`.
+- **Auth Preset** — `defineAuthMiddleware` resolves the current user into `ctx.user` or rejects with a typed 401. See `/auth`.
+- **OpenAPI & Swagger UI** — generate an OpenAPI 3.1 document (and optional Swagger UI) from your actions via the `openapi` module option. See `/openapi`.
+- **CLI Scaffolding** — `npx nuxt-actions add <name>` generates a typed action file.
+- **DevTools** — the actions tab lists each endpoint with a ready-to-copy curl snippet.
+
+This example runs on **Nuxt 4**.
 
 ## What's New in v1.1.0+
 
@@ -110,6 +128,10 @@ Open [http://localhost:3000](http://localhost:3000).
 - **Prefetch & Cache** — Pre-warm queries on hover, cache streamed results across navigations
 - **Cache Management** — `invalidateActions` and `clearActionCache` for fine-grained cache control
 - **Infinite Scroll** — Cursor-based pagination with SSR first page
+- **Smart Cache Invalidation** — A mutation auto-refetches every query under a shared tag
+- **File Uploads** — `multipart/form-data` parsed into typed file fields
+- **Auth Preset** — `defineAuthMiddleware` for `ctx.user` resolution and 401 rejection
+- **OpenAPI** — Generated OpenAPI 3.1 document and Swagger UI from your actions
 
 ## License
 

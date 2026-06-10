@@ -13,6 +13,18 @@
       <NuxtLink to="/optimistic">
         Optimistic
       </NuxtLink>
+      <NuxtLink to="/mutations">
+        Mutations
+      </NuxtLink>
+      <NuxtLink to="/uploads">
+        Uploads
+      </NuxtLink>
+      <NuxtLink to="/auth">
+        Auth
+      </NuxtLink>
+      <NuxtLink to="/openapi">
+        OpenAPI
+      </NuxtLink>
       <NuxtLink to="/streaming">
         Streaming
       </NuxtLink>
