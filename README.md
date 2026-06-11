@@ -1,6 +1,6 @@
 # nuxt-actions Example
 
-Real-world examples for [nuxt-actions](https://github.com/billymaulana/nuxt-actions) v1.2.0 — type-safe server actions for Nuxt.
+Real-world examples for [nuxt-actions](https://github.com/billymaulana/nuxt-actions) v1.3.0 — type-safe server actions for Nuxt.
 
 <p>
   <a href="https://npmjs.com/package/nuxt-actions"><img src="https://img.shields.io/npm/v/nuxt-actions/latest.svg?style=flat&colorA=020420&colorB=00DC82" alt="npm version"></a>
@@ -27,6 +27,9 @@ Real-world examples for [nuxt-actions](https://github.com/billymaulana/nuxt-acti
 | `/uploads` | multipart/form-data parsed into typed file fields | `useAction`, `ActionFile` |
 | `/auth` | Protect actions, resolve `ctx.user`, reject with 401 | `defineAuthMiddleware` |
 | `/openapi` | Generate an OpenAPI 3.1 doc + Swagger UI from actions | `openapi` module option |
+| `/payments` | Double-click-safe payments — duplicates replay, not re-charge | `idempotency` option |
+| `/observability` | Global action hooks for analytics + grouped `actions.admin.metrics` | `action:*` hooks |
+| `/resilience` | Exponential retry backoff, `cancelPrevious` search, `cancel()` | `useAction` |
 | `/streaming` | SSE text streaming with stop control | `useStreamAction` |
 | `/queries` | SSR queries + debounced search + transform | `useActionQuery` |
 | `/middleware` | Auth chain, skip behavior, typed context | `defineMiddleware` |
@@ -83,6 +86,15 @@ Open [http://localhost:3000](http://localhost:3000).
 | `rateLimitMiddleware` | In-memory rate limiting per IP |
 | `csrfMiddleware` | CSRF token protection with timing-safe comparison |
 | `invalidateActions` / `invalidateTags` | Refetch action queries by reference, path, or tag |
+
+## What's New in v1.3.0
+
+- **Idempotency** — `idempotency` option replays duplicate `Idempotency-Key` requests instead of re-running the handler (double-charge protection). See `/payments`.
+- **Global action hooks** — `action:start/success/error/settled` on `nuxtApp` for analytics, toasts, and monitoring. See `/observability`.
+- **Retry backoff** — `retry: { backoff: 'exponential' | 'linear', maxDelay, jitter }`. See `/resilience`.
+- **`cancelPrevious` + `cancel()`** — abort the previous/in-flight request for stale-free type-ahead search. See `/resilience`.
+- **Typed error codes** — `ActionErrorCode` union + client-side `isActionError`.
+- **Grouped namespace** — `actions.admin.metrics` mirrors the directory structure alongside flat exports.
 
 ## What's New in v1.2.0
 

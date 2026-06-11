@@ -34,6 +34,15 @@
       <NuxtLink to="/middleware">
         Middleware
       </NuxtLink>
+      <NuxtLink to="/payments">
+        Payments
+      </NuxtLink>
+      <NuxtLink to="/observability">
+        Observability
+      </NuxtLink>
+      <NuxtLink to="/resilience">
+        Resilience
+      </NuxtLink>
       <NuxtLink to="/advanced">
         Advanced
       </NuxtLink>
