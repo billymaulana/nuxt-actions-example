@@ -13,6 +13,18 @@
       <NuxtLink to="/optimistic">
         Optimistic
       </NuxtLink>
+      <NuxtLink to="/mutations">
+        Mutations
+      </NuxtLink>
+      <NuxtLink to="/uploads">
+        Uploads
+      </NuxtLink>
+      <NuxtLink to="/auth">
+        Auth
+      </NuxtLink>
+      <NuxtLink to="/openapi">
+        OpenAPI
+      </NuxtLink>
       <NuxtLink to="/streaming">
         Streaming
       </NuxtLink>
@@ -21,6 +33,15 @@
       </NuxtLink>
       <NuxtLink to="/middleware">
         Middleware
+      </NuxtLink>
+      <NuxtLink to="/payments">
+        Payments
+      </NuxtLink>
+      <NuxtLink to="/observability">
+        Observability
+      </NuxtLink>
+      <NuxtLink to="/resilience">
+        Resilience
       </NuxtLink>
       <NuxtLink to="/advanced">
         Advanced

@@ -39,6 +39,41 @@ const pages = [
     description: 'Toggle todo status with instant UI updates and automatic rollback on error.',
   },
   {
+    path: '/mutations',
+    title: 'Smart Cache Invalidation',
+    description: 'useActionMutation + tags — a write auto-refetches every query that depends on it.',
+  },
+  {
+    path: '/uploads',
+    title: 'File Uploads',
+    description: 'multipart/form-data parsed into typed file fields. Avatar upload with preview.',
+  },
+  {
+    path: '/auth',
+    title: 'Auth Preset',
+    description: 'defineAuthMiddleware resolves ctx.user or rejects with a typed 401.',
+  },
+  {
+    path: '/openapi',
+    title: 'OpenAPI & Swagger UI',
+    description: 'Generate an OpenAPI 3.1 document and Swagger UI straight from your actions.',
+  },
+  {
+    path: '/payments',
+    title: 'Idempotent Payments',
+    description: 'Double-clicking Pay never double-charges — idempotency option replays duplicate requests.',
+  },
+  {
+    path: '/observability',
+    title: 'Observability',
+    description: 'Global action:start/success/error/settled hooks plus grouped actions.admin.metrics.',
+  },
+  {
+    path: '/resilience',
+    title: 'Resilience',
+    description: 'Exponential retry backoff with jitter, cancelPrevious search, and manual cancel().',
+  },
+  {
     path: '/streaming',
     title: 'Streaming',
     description: 'AI-style text streaming via Server-Sent Events with real-time chunk updates.',

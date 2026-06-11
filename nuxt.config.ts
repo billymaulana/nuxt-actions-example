@@ -11,4 +11,11 @@ export default defineNuxtConfig({
     },
   },
   compatibilityDate: 'latest',
+
+  actions: {
+    openapi: {
+      ui: true,
+      info: { title: 'nuxt-actions example API', version: '1.2.0' },
+    },
+  },
 })
